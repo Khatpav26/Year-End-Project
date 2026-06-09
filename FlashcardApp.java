@@ -5,26 +5,19 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
-
 public class FlashcardApp {
-
-    // --- Data ---
     static class Flashcard {
         String question;
         String answer;
         String deck;
-
         Flashcard(String deck, String question, String answer) {
             this.deck = deck;
             this.question = question;
             this.answer = answer;
         }
     }
-
-    // --- Persistence ---
     private static final String SAVE_FILE = "flashiq_cards.txt";
     private static final String DELIMITER = "|||";
-
     private void saveCards() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(SAVE_FILE))) {
             for (Flashcard c : allCards) {
@@ -34,7 +27,6 @@ public class FlashcardApp {
             JOptionPane.showMessageDialog(frame, "Could not save cards: " + e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void loadCards() {
         File f = new File(SAVE_FILE);
         if (!f.exists()) return;
@@ -50,12 +42,9 @@ public class FlashcardApp {
             JOptionPane.showMessageDialog(null, "Could not load saved cards: " + e.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    // --- State ---
     private JFrame frame;
     private CardLayout cardLayout;
     private JPanel mainPanel;
-
     private ArrayList<Flashcard> allCards = new ArrayList<>();
     private ArrayList<Flashcard> sessionCards = new ArrayList<>();
     private int currentIndex = 0;
@@ -63,7 +52,6 @@ public class FlashcardApp {
     private int correct = 0;
     private int incorrect = 0;
 
-    // Quiz panel components
     private JLabel deckLabel;
     private JLabel cardCountLabel;
     private JTextArea cardTextArea;
@@ -73,7 +61,6 @@ public class FlashcardApp {
     private JLabel progressLabel;
     private JPanel answerPanel;
 
-    // Colors
     private static final Color BG_COLOR      = new Color(245, 247, 250);
     private static final Color CARD_COLOR    = new Color(255, 255, 255);
     private static final Color PRIMARY_COLOR = new Color(67, 97, 238);
@@ -113,12 +100,10 @@ public class FlashcardApp {
         frame.setVisible(true);
     }
 
-    // ===================== HOME =====================
     private JPanel buildHomePanel() {
         JPanel panel = new JPanel(new BorderLayout(0, 0));
         panel.setBackground(BG_COLOR);
 
-        // Header
         JPanel header = new JPanel();
         header.setBackground(PRIMARY_COLOR);
         header.setBorder(new EmptyBorder(24, 30, 24, 30));
@@ -128,7 +113,6 @@ public class FlashcardApp {
         header.add(title);
         panel.add(header, BorderLayout.NORTH);
 
-        // Center
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         center.setBackground(BG_COLOR);
@@ -141,7 +125,6 @@ public class FlashcardApp {
         center.add(subtitle);
         center.add(Box.createVerticalStrut(18));
 
-        // Deck buttons
         Set<String> decks = new LinkedHashSet<>();
         decks.add("All Decks");
         for (Flashcard c : allCards) decks.add(c.deck);
@@ -164,7 +147,6 @@ public class FlashcardApp {
 
         panel.add(center, BorderLayout.CENTER);
 
-        // Footer
         JLabel footer = new JLabel("Total cards: " + allCards.size(), SwingConstants.CENTER);
         footer.setFont(new Font("SansSerif", Font.PLAIN, 12));
         footer.setForeground(GRAY_TEXT);
@@ -174,13 +156,11 @@ public class FlashcardApp {
         return panel;
     }
 
-    // ===================== QUIZ =====================
     private JPanel buildQuizPanel() {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setBackground(BG_COLOR);
         panel.setBorder(new EmptyBorder(16, 24, 16, 24));
 
-        // Top bar
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(BG_COLOR);
         deckLabel = new JLabel("Deck");
@@ -193,7 +173,6 @@ public class FlashcardApp {
         topBar.add(cardCountLabel, BorderLayout.EAST);
         panel.add(topBar, BorderLayout.NORTH);
 
-        // Card area
         JPanel cardWrapper = new JPanel(new BorderLayout());
         cardWrapper.setBackground(CARD_COLOR);
         cardWrapper.setBorder(BorderFactory.createCompoundBorder(
@@ -226,7 +205,6 @@ public class FlashcardApp {
 
         panel.add(cardWrapper, BorderLayout.CENTER);
 
-        // Bottom: correct / wrong buttons + progress
         JPanel bottomPanel = new JPanel(new BorderLayout(0, 8));
         bottomPanel.setBackground(BG_COLOR);
 
@@ -265,7 +243,6 @@ public class FlashcardApp {
         return panel;
     }
 
-    // ===================== RESULT =====================
     private JPanel resultPanel;
     private JLabel resultTitle, resultScore, resultMsg;
 
@@ -306,7 +283,6 @@ public class FlashcardApp {
         return resultPanel;
     }
 
-    // ===================== MANAGE =====================
     private JPanel manageCardsList;
     private JTextField qField, aField, deckField;
 
@@ -314,7 +290,6 @@ public class FlashcardApp {
         JPanel panel = new JPanel(new BorderLayout(0, 0));
         panel.setBackground(BG_COLOR);
 
-        // Header
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(PRIMARY_COLOR);
         header.setBorder(new EmptyBorder(14, 20, 14, 20));
@@ -332,7 +307,6 @@ public class FlashcardApp {
         header.add(back, BorderLayout.EAST);
         panel.add(header, BorderLayout.NORTH);
 
-        // Add card form
         JPanel addForm = new JPanel(new GridBagLayout());
         addForm.setBackground(BG_COLOR);
         addForm.setBorder(new EmptyBorder(14, 20, 10, 20));
@@ -355,7 +329,6 @@ public class FlashcardApp {
 
         panel.add(addForm, BorderLayout.NORTH);
 
-        // Card list
         manageCardsList = new JPanel();
         manageCardsList.setLayout(new BoxLayout(manageCardsList, BoxLayout.Y_AXIS));
         manageCardsList.setBackground(BG_COLOR);
@@ -379,7 +352,6 @@ public class FlashcardApp {
         panel.add(field, gbc);
     }
 
-    // ===================== LOGIC =====================
     private void startQuiz(String deck) {
         sessionCards = new ArrayList<>();
         for (Flashcard c : allCards) {
